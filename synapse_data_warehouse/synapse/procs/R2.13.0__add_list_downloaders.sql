@@ -1,6 +1,7 @@
-CREATE OR REPLACE PROCEDURE list_downloaders(start_record_date string, entity_list string)
+CREATE OR REPLACE PROCEDURE list_downloaders2(start_record_date DATE, entity_list string)
 RETURNS TABLE (user_id integer, user_name varchar, email varchar, synapse_profile varchar, num_downloads integer, earliest_download_time timestamp, latest_download_time timestamp)
 LANGUAGE SQL
+EXECUTE AS CALLER
 AS
 declare
     rs resultset;
@@ -21,7 +22,7 @@ declare
     join filetree ft on ft.id = fd.association_object_id
     where fd.association_object_type = ''FileEntity''
         and ft.node_type = ''file''
-        and fd.record_date >= ''' ||:start_record_date|| '''
+        and fd.record_date >= ''' ||TO_CHAR(:start_record_date, 'YYYY-MM-DD')|| '''
     ),';
     query_str3 varchar default
     'download_summary (user_id, c, min_t, max_t) as (
